@@ -1,0 +1,6 @@
+{
+  "name": "Donare",
+  "description": "Donare is a transparent donation tracking and impact platform designed for verified donors to explore verified causes and trace deliveries.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
