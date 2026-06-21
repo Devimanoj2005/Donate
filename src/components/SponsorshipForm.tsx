@@ -125,6 +125,8 @@ export default function SponsorshipForm({
   const [quantity, setQuantity] = useState(request ? request.quantityRequested : "1.0 Box Units");
   const [itemCondition, setItemCondition] = useState<"New" | "Like New" | "Good" | "Fair">("Good");
   const [notes, setNotes] = useState("");
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurringPeriod, setRecurringPeriod] = useState<"weekly" | "monthly" | "yearly">("monthly");
 
   // Map Interactive States
   const [userPin, setUserPin] = useState<{ x: number; y: number }>({ x: 40, y: 50 });
@@ -239,7 +241,9 @@ export default function SponsorshipForm({
         recipientId,
         recipientName,
         category: itemType,
-        itemDescription: `[${itemCondition}] ${quantity} of ${itemType} - ${notes.slice(0, 45) || "Dispatched supplies"}`,
+        itemDescription: campaign && isRecurring
+          ? `[${itemCondition}] ${quantity} of ${itemType} (Recurring ${recurringPeriod}) - ${notes.slice(0, 30) || "Dispatched supplies"}`
+          : `[${itemCondition}] ${quantity} of ${itemType} - ${notes.slice(0, 45) || "Dispatched supplies"}`,
         quantity,
         status: DonationStatus.PENDING,
         trackingNumber,
@@ -248,9 +252,13 @@ export default function SponsorshipForm({
           { 
             status: DonationStatus.PENDING, 
             date: new Date().toISOString().split("T")[0], 
-            description: `Trans-logistic ledger established. Selected pickup via ${deliveryMethod} for ${preferredPickupDate}.` 
+            description: campaign && isRecurring
+              ? `Trans-logistic ledger established. Configured as ${recurringPeriod} recurring donation. Selected pickup via ${deliveryMethod} for ${preferredPickupDate}.`
+              : `Trans-logistic ledger established. Selected pickup via ${deliveryMethod} for ${preferredPickupDate}.` 
           }
-        ]
+        ],
+        isRecurring: campaign ? isRecurring : undefined,
+        recurringPeriod: campaign && isRecurring ? recurringPeriod : undefined
       };
 
       // Push state up to parent database
@@ -559,6 +567,12 @@ export default function SponsorshipForm({
                 <span className="block text-[10px] text-slate-400 font-mono text-xs">DELIVERY SYSTEM</span>
                 <span className="font-semibold text-slate-800">{deliveryMethod}</span>
               </div>
+              {submitResult.isRecurring && (
+                <div className="col-span-2 bg-emerald-50/70 border border-emerald-100 p-2.5 rounded-xl mt-1.5 flex items-center space-x-1.5 text-emerald-800">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                  <span className="font-bold text-[10px] font-sans uppercase tracking-wider">Active {submitResult.recurringPeriod} recurring commitment</span>
+                </div>
+              )}
             </div>
 
             {/* Pickup details instructions */}
@@ -852,6 +866,53 @@ export default function SponsorshipForm({
                 className="w-full px-3.5 py-2.5 bg-slate-50/50 focus:bg-white border border-slate-200 focus:border-slate-800 rounded-xl text-xs focus:outline-none resize-none transition-colors"
               />
             </div>
+
+            {campaign && (
+              <div className="mt-4 p-4 bg-emerald-50/20 border border-emerald-100/50 rounded-2xl space-y-3" id="recurring-donation-block">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <span className="block text-xs font-bold text-slate-800 font-sans flex items-center gap-1.5">
+                      <Heart className="w-4 h-4 text-emerald-600 fill-emerald-100" />
+                      Make this a Recurring Commitment
+                    </span>
+                    <span className="block text-[11px] text-slate-500 font-sans leading-normal">
+                      Regularly automate this cargo shipment or financial dispatch to support this campaign's target.
+                    </span>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer select-none">
+                    <input 
+                      type="checkbox" 
+                      className="sr-only peer" 
+                      checked={isRecurring}
+                      onChange={(e) => setIsRecurring(e.target.checked)}
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                  </label>
+                </div>
+
+                {isRecurring && (
+                  <div className="pt-2 border-t border-emerald-100/30 flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between animate-fadeIn">
+                    <span className="text-[11px] font-semibold text-slate-600 font-sans">Sponsorship Recurrence Interval:</span>
+                    <div className="flex gap-1 bg-white border border-slate-250 p-1 rounded-xl">
+                      {(["weekly", "monthly", "yearly"] as const).map((period) => (
+                        <button
+                          key={period}
+                          type="button"
+                          onClick={() => setRecurringPeriod(period)}
+                          className={`px-3 py-1 text-[10px] font-extrabold uppercase font-mono rounded-lg transition-all cursor-pointer ${
+                            recurringPeriod === period
+                              ? "bg-emerald-500 text-white shadow-3xs"
+                              : "text-slate-500 hover:bg-slate-50"
+                          }`}
+                        >
+                          {period}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Section 4: Collection Location & Dynamic Map selection */}

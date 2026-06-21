@@ -123,7 +123,7 @@ export default function Navigation({
                 
                 <div 
                   onClick={() => setActiveTab("dashboard")}
-                  className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 cursor-pointer hover:border-emerald-500 hover:ring-2 hover:ring-emerald-100 transition-all"
+                  className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 cursor-pointer hover:border-emerald-500 hover:ring-2 hover:ring-emerald-100 transition-all relative"
                   title="Go to dashboard"
                 >
                   {currentUser.avatar ? (
@@ -135,6 +135,13 @@ export default function Navigation({
                     />
                   ) : (
                     <UserIcon className="w-5 h-5 text-slate-600" />
+                  )}
+                  {currentUser.isVerified && (
+                    <span className="absolute -bottom-0.5 -right-0.5 bg-emerald-500 text-white rounded-full p-0.5 border-2 border-white shadow-sm flex items-center justify-center z-10" title="Verified Account">
+                      <svg className="w-2.5 h-2.5 text-white stroke-[3.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </span>
                   )}
                 </div>
 

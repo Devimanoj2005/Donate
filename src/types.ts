@@ -99,6 +99,8 @@ export interface DonationAction {
   trackingNumber: string;
   timestamp: string;
   timeline: { status: DonationStatus; date: string; description: string }[];
+  isRecurring?: boolean;
+  recurringPeriod?: "monthly" | "weekly" | "yearly" | string;
 }
 
 export interface SuccessStory {

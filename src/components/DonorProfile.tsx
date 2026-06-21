@@ -9,7 +9,7 @@ import {
   Heart, ShieldCheck, Mail, Share2, Award, Calendar, MapPin, 
   Settings, CheckCircle, Clock, Eye, Edit2, MessageSquare, 
   Lock, Globe, Users, TrendingUp, Sparkles, BookOpen, Gift, Coffee, Plus, ChevronRight, Search, ListFilter,
-  Camera, Image as ImageIcon, Upload
+  Camera, Image as ImageIcon, Upload, Activity, FileText, ExternalLink, Package, Map
 } from "lucide-react";
 
 interface DonorProfileProps {
@@ -63,91 +63,92 @@ interface SampleDonor {
 
 export default function DonorProfile({ currentUser, actions, onClose, onUpdateUser }: DonorProfileProps) {
   // 1. STATEFUL DONORS DATABASE
-  // We initialize the list of sample donors, with Dr. Sarah Jenkins mapped directly to the active logged-in User
-  const [donorsList, setDonorsList] = useState<SampleDonor[]>([
-    {
-      id: currentUser.id,
-      name: currentUser.name || "Dr. Sarah Jenkins",
-      username: currentUser.username || "sarah_jenkins_impact",
-      bio: currentUser.bio || "Surgical Specialist dedicated to global pediatric healthcare support and digital education parity. Sponsoring textbook routes and direct medical supplies tracking since 2024.",
-      location: currentUser.region || "San Francisco, CA",
-      memberSince: "February 24, 2024",
-      isVerified: true,
-      avatar: currentUser.avatar || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
-      followerCount: 38,
-      isFollowing: false,
-      donationStreak: "4 Months",
-      totalDonationsCount: actions.filter(act => act.donorId === currentUser.id).length || 7,
-      totalAmountDonated: actions.filter(act => act.donorId === currentUser.id).reduce((sum, act) => sum + (act.amount || 0), 0) || 12450,
-      beneficiariesCount: Math.ceil((actions.filter(act => act.donorId === currentUser.id).length || 7) * 1.4) || 6,
-      ngosSupportedCount: 4,
-      impactScore: 920,
-      supportedCauses: {
-        education: true,
-        healthcare: true,
-        foodAssistance: true,
-        disasterRelief: false,
-        elderlyCare: true,
-        childWelfare: true
+  // We initialize the list of sample donors, preserving Dr. Sarah Jenkins as a designated static profile while optionally appending any newly created account.
+  const [donorsList, setDonorsList] = useState<SampleDonor[]>(() => {
+    const baseList: SampleDonor[] = [
+      {
+        id: "user-donor-1",
+        name: "Dr. Sarah Jenkins",
+        username: "sarah_jenkins_impact",
+        bio: "Surgical Specialist dedicated to global pediatric healthcare support and digital education parity. Sponsoring textbook routes and direct medical supplies tracking since 2024.",
+        location: "San Francisco, CA",
+        memberSince: "February 24, 2024",
+        isVerified: true,
+        avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150",
+        followerCount: 38,
+        isFollowing: false,
+        donationStreak: "4 Months",
+        totalDonationsCount: 7,
+        totalAmountDonated: 12450,
+        beneficiariesCount: 6,
+        ngosSupportedCount: 4,
+        impactScore: 920,
+        supportedCauses: {
+          education: true,
+          healthcare: true,
+          foodAssistance: true,
+          disasterRelief: false,
+          elderlyCare: true,
+          childWelfare: true
+        },
+        timelineEvents: [
+          {
+            id: "event-1",
+            type: "milestone",
+            title: "Monthly Hero Medal Awarded",
+            desc: "Achieved the 3+ Month Continuous Support streak on direct aid.",
+            date: "June 2026",
+            tag: "Milestone"
+          },
+          {
+            id: "event-2",
+            type: "donation",
+            title: "Dispatched S$ 1,200 dry groceries cargo package",
+            desc: "Routed cargo directly to Hope Pioneer Foundation central food depot.",
+            date: "May 18, 2026",
+            tag: "Dispatched"
+          },
+          {
+            id: "event-3",
+            type: "ngo",
+            title: "Validated Educational Material Route Partnership",
+            desc: "Established textbook delivery logistics mapping with Singapore Youth Scholars.",
+            date: "March 11, 2026",
+            tag: "Verification"
+          },
+          {
+            id: "event-4",
+            type: "donation",
+            title: "First Donation of S$ 2,500 via Money Ledger",
+            desc: "Successfully sponsored clean water purification units campaign.",
+            date: "February 25, 2024",
+            tag: "First Donation"
+          }
+        ],
+        reviewsAppreciation: [
+          {
+            id: "review-1",
+            author: "Director, Hope Pioneer Foundation",
+            role: "NGO Representative",
+            text: "Thanks to Sarah's consistent educational book drives, over 120 primary grade children at Eldoret School received mathematics textbooks in pristine condition. Live tracking visual logs were bulletproof.",
+            date: "3 weeks ago"
+          },
+          {
+            id: "review-2",
+            author: "Rahman Family Hub",
+            role: "Beneficiary Family",
+            text: "Our children received the study table package safely yesterday. A heartfelt message of deep gratitude for providing books and household items directly to our dispatch hub.",
+            date: "April 2026"
+          },
+          {
+            id: "review-3",
+            author: "Integrity Lead",
+            role: "Community Feedback",
+            text: "A model donor profile setting the template for direct-aid social responsibility on Donare.",
+            date: "January 2026"
+          }
+        ]
       },
-      timelineEvents: [
-        {
-          id: "event-1",
-          type: "milestone",
-          title: "Monthly Hero Medal Awarded",
-          desc: "Achieved the 3+ Month Continuous Support streak on direct aid.",
-          date: "June 2026",
-          tag: "Milestone"
-        },
-        {
-          id: "event-2",
-          type: "donation",
-          title: "Dispatched S$ 1,200 dry groceries cargo package",
-          desc: "Routed cargo directly to Hope Pioneer Foundation central food depot.",
-          date: "May 18, 2026",
-          tag: "Dispatched"
-        },
-        {
-          id: "event-3",
-          type: "ngo",
-          title: "Validated Educational Material Route Partnership",
-          desc: "Established textbook delivery logistics mapping with Singapore Youth Scholars.",
-          date: "March 11, 2026",
-          tag: "Verification"
-        },
-        {
-          id: "event-4",
-          type: "donation",
-          title: "First Donation of S$ 2,500 via Money Ledger",
-          desc: "Successfully sponsored clean water purification units campaign.",
-          date: "February 25, 2024",
-          tag: "First Donation"
-        }
-      ],
-      reviewsAppreciation: [
-        {
-          id: "review-1",
-          author: "Director, Hope Pioneer Foundation",
-          role: "NGO Representative",
-          text: "Thanks to Sarah's consistent educational book drives, over 120 primary grade children at Eldoret School received mathematics textbooks in pristine condition. Live tracking visual logs were bulletproof.",
-          date: "3 weeks ago"
-        },
-        {
-          id: "review-2",
-          author: "Rahman Family Hub",
-          role: "Beneficiary Family",
-          text: "Our children received the study table package safely yesterday. A heartfelt message of deep gratitude for providing books and household items directly to our dispatch hub.",
-          date: "April 2026"
-        },
-        {
-          id: "review-3",
-          author: "Integrity Lead",
-          role: "Community Feedback",
-          text: "A model donor profile setting the template for direct-aid social responsibility on Donare.",
-          date: "January 2026"
-        }
-      ]
-    },
     {
       id: "marcus_vance_builds",
       name: "Marcus Vance",
@@ -307,7 +308,58 @@ export default function DonorProfile({ currentUser, actions, onClose, onUpdateUs
         }
       ]
     }
-  ]);
+  ];
+
+  // Check if the current user is Dr. Sarah Jenkins. 
+  // If we have a newly registered user (not Dr. Sarah Jenkins), prepend their unique credential record onto the searchable list!
+  const isSarahJenkins = currentUser && (currentUser.id === "user-donor-1" || currentUser.username === "sarah_jenkins_impact");
+  if (currentUser && !isSarahJenkins) {
+    const userDonorRecord: SampleDonor = {
+      id: currentUser.id,
+      name: currentUser.name || "Newly Registered Donor",
+      username: currentUser.username || "new_donor_gives",
+      bio: currentUser.bio || `Securely authenticated digital social investor. Sponsoring direct aid routes dynamically.`,
+      location: currentUser.region || "Global Hub Space",
+      memberSince: "June 2026",
+      isVerified: currentUser.isVerified !== undefined ? currentUser.isVerified : true,
+      avatar: currentUser.avatar || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+      followerCount: 0,
+      isFollowing: false,
+      donationStreak: "1 Month",
+      totalDonationsCount: actions.filter(act => act.donorId === currentUser.id).length,
+      totalAmountDonated: actions.filter(act => act.donorId === currentUser.id).reduce((sum, act) => sum + (act.amount || 0), 0),
+      beneficiariesCount: Math.ceil(actions.filter(act => act.donorId === currentUser.id).length * 1.3),
+      ngosSupportedCount: actions.filter(act => act.donorId === currentUser.id).reduce((acc, act) => acc.includes(act.recipientId) ? acc : [...acc, act.recipientId], [] as string[]).length || 0,
+      impactScore: 100,
+      supportedCauses: {
+        education: true,
+        healthcare: true,
+        foodAssistance: true,
+        disasterRelief: true,
+        elderlyCare: false,
+        childWelfare: true
+      },
+      timelineEvents: [
+        {
+          id: "user-joined-event",
+          type: "milestone",
+          title: "Cryptographic Sandbox Key Established",
+          desc: "Authorized 2FA Multi-Factor Verification and joined the public ledger.",
+          date: "June 2026",
+          tag: "Joined Platform"
+        }
+      ],
+      reviewsAppreciation: []
+    };
+    
+    // Look if the current user's entry is not already present in the list of sample donors
+    if (!baseList.some(d => d.id === currentUser.id)) {
+      return [userDonorRecord, ...baseList];
+    }
+  }
+
+  return baseList;
+});
 
   // 2. ACTIVE SELECTION MANAGEMENT
   const [selectedDonorId, setSelectedDonorId] = useState<string>(currentUser.id);
@@ -424,6 +476,7 @@ export default function DonorProfile({ currentUser, actions, onClose, onUpdateUs
   ];
 
   const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [selectedTimelineEvent, setSelectedTimelineEvent] = useState<any>(null);
   const [galleryCategory, setGalleryCategory] = useState("Medical & Science");
   const [customAvatarUrl, setCustomAvatarUrl] = useState("");
   const [urlSuccessMsg, setUrlSuccessMsg] = useState("");
@@ -656,11 +709,20 @@ export default function DonorProfile({ currentUser, actions, onClose, onUpdateUs
                         : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100/70 hover:border-slate-350"
                     }`}
                   >
-                    <img
-                      src={donor.avatar}
-                      alt={donor.name}
-                      className="w-7 h-7 rounded-full object-cover border"
-                    />
+                    <div className="relative flex-shrink-0">
+                      <img
+                        src={donor.avatar}
+                        alt={donor.name}
+                        className="w-7 h-7 rounded-full object-cover border border-slate-100"
+                      />
+                      {donor.isVerified && (
+                        <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border border-white flex items-center justify-center shadow-xs">
+                          <svg className="w-2 h-2 text-white stroke-[4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </span>
+                      )}
+                    </div>
                     <div>
                       <div className="flex items-center space-x-1 font-semibold text-xs font-sans">
                         <span>{donor.id === currentUser.id && isAnonymousDonation && isSelected && viewMode === "visitor" ? "Anonymous" : donor.name}</span>
@@ -1191,13 +1253,22 @@ export default function DonorProfile({ currentUser, actions, onClose, onUpdateUs
 
             {/* Timeline Column */}
             <div className="bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono mb-6">Historical Impact Timeline</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">Historical Impact Timeline</h3>
+                <span className="text-[9px] font-mono font-bold text-slate-400 uppercase bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100">
+                  Click event to audit
+                </span>
+              </div>
               
-              <div className="relative border-l-2 border-slate-100 pl-6 ml-3 space-y-6">
+              <div className="relative border-l-2 border-slate-100 pl-6 ml-3 space-y-4">
                 {activeDonor.timelineEvents.map((ev) => (
-                  <div key={ev.id} className="relative group">
+                  <button
+                    key={ev.id}
+                    onClick={() => setSelectedTimelineEvent(ev)}
+                    className="relative block w-full text-left p-4 -mx-4 rounded-2xl transition-all duration-200 hover:bg-emerald-50/45 border border-transparent hover:border-emerald-100/50 group cursor-pointer focus:outline-none"
+                  >
                     {/* Ring dot handle */}
-                    <div className={`absolute -left-[31px] top-1.5 w-4 h-4 rounded-full border-4 border-white ${
+                    <div className={`absolute -left-[31px] top-5.5 w-4 h-4 rounded-full border-4 border-white transition-transform duration-200 group-hover:scale-110 ${
                       ev.type === "milestone" 
                         ? "bg-amber-400 ring-4 ring-amber-50" 
                         : ev.type === "ngo"
@@ -1205,19 +1276,32 @@ export default function DonorProfile({ currentUser, actions, onClose, onUpdateUs
                         : "bg-emerald-500 ring-4 ring-emerald-50"
                     }`} />
 
-                    <div className="flex items-center space-x-2 text-[10px] font-mono text-slate-400 uppercase">
-                      <span>{ev.date}</span>
-                      <span>•</span>
-                      <span className="font-bold">{ev.tag}</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2 text-[10px] font-mono text-slate-400 uppercase">
+                        <span>{ev.date}</span>
+                        <span>•</span>
+                        <span className="font-bold text-emerald-800">{ev.tag}</span>
+                      </div>
+                      <span className="text-[9px] font-mono font-bold text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity bg-emerald-100/70 px-1.5 py-0.5 rounded-sm flex items-center gap-1">
+                        Access Audit <ChevronRight className="w-2.5 h-2.5" />
+                      </span>
                     </div>
 
-                    <h4 className="text-xs font-bold font-sans text-slate-800 mt-1">
+                    <h4 className="text-xs font-bold font-sans text-slate-800 mt-1.5 group-hover:text-emerald-950 transition-colors">
                       {ev.title}
                     </h4>
-                    <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+                    <p className="text-[11px] text-slate-500 leading-relaxed mt-1">
                       {ev.desc}
                     </p>
-                  </div>
+                    
+                    <div className="mt-2.5 flex items-center space-x-2 text-[10px] font-mono text-slate-400">
+                      <span className="flex items-center text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded font-extrabold text-[9px] tracking-wider uppercase">
+                        <ShieldCheck className="w-3 h-3 text-emerald-600 mr-0.5" /> Audit Proof
+                      </span>
+                      <span>•</span>
+                      <span>Inspect direct-aid routing receipt</span>
+                    </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -1428,11 +1512,20 @@ export default function DonorProfile({ currentUser, actions, onClose, onUpdateUs
               {getFollowersList().map((follower, idx) => (
                 <div key={idx} className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100">
                   <div className="flex items-center space-x-2.5">
-                    <img
-                      src={follower.avatar}
-                      alt={follower.name}
-                      className="w-7 h-7 rounded-full object-cover border"
-                    />
+                    <div className="relative flex-shrink-0">
+                      <img
+                        src={follower.avatar}
+                        alt={follower.name}
+                        className="w-7 h-7 rounded-full object-cover border border-slate-100"
+                      />
+                      {follower.verified && (
+                        <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border border-white flex items-center justify-center shadow-xs">
+                          <svg className="w-2 h-2 text-white stroke-[4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </span>
+                      )}
+                    </div>
                     <div>
                       <span className="font-bold text-xs text-slate-800 block flex items-center">
                         {follower.name}
@@ -1620,6 +1713,159 @@ export default function DonorProfile({ currentUser, actions, onClose, onUpdateUs
               Verify & Lock Changes
             </button>
 
+          </div>
+        </div>
+      )}
+
+      {/* EXQUISITE TIMELINE AUDIT PROOF POPUP MODAL */}
+      {selectedTimelineEvent && (
+        <div 
+          className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto" 
+          id="timeline-audit-modal"
+          onClick={() => setSelectedTimelineEvent(null)}
+        >
+          <div 
+            className="relative w-full max-w-xl bg-white border border-slate-105 rounded-3xl p-6 sm:p-8 shadow-2xl font-sans"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header Area */}
+            <div className="flex justify-between items-start pb-4 border-b border-slate-120 mb-6">
+              <div>
+                <span className="text-[10px] uppercase font-mono tracking-widest font-bold text-slate-400">
+                  Direct-Aid Ledger Proof
+                </span>
+                <h3 className="text-base font-extrabold text-slate-955 leading-tight mt-1 flex items-center gap-1.5">
+                  <span>Audit Dispatch Record</span>
+                  <span className="text-emerald-600">✓</span>
+                </h3>
+              </div>
+              <button
+                onClick={() => setSelectedTimelineEvent(null)}
+                className="p-1 px-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition-all cursor-pointer"
+              >
+                ✕ Close
+              </button>
+            </div>
+
+            {/* Event Summary Overview Banner */}
+            <div className="mb-6 p-4 rounded-2xl bg-slate-50 border border-slate-100 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl -mr-6 -mt-6"></div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50/80 px-2 py-0.5 rounded-xs uppercase tracking-widest font-mono">
+                  {selectedTimelineEvent.tag}
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">{selectedTimelineEvent.date}</span>
+              </div>
+              <h4 className="text-xs font-extrabold text-slate-950 pr-8">
+                {selectedTimelineEvent.title}
+              </h4>
+              <p className="text-[11px] text-slate-600 mt-2 leading-relaxed">
+                {selectedTimelineEvent.desc}
+              </p>
+            </div>
+
+            {/* Dynamic Status / Interactive Delivery Stepper Tracker */}
+            <div className="mb-6">
+              <h5 className="text-[10px] uppercase font-mono tracking-wider font-bold text-slate-400 mb-3">
+                Action Chain & Supply Route
+              </h5>
+              
+              <div className="grid grid-cols-4 gap-2 relative">
+                {/* Visual Connector Line */}
+                <div className="absolute top-[15px] left-[12.5%] right-[12.5%] h-0.5 bg-slate-100 -z-0"></div>
+
+                {[
+                  { label: "Initiated", completed: true, date: "D-Day", icon: <CheckCircle className="w-4 h-4 text-emerald-600" /> },
+                  { label: "Ledger Signed", completed: true, date: "+1 Hour", icon: <ShieldCheck className="w-4 h-4 text-emerald-600" /> },
+                  { label: "With NGO Partner", completed: true, date: "Sourced", icon: <Package className="w-4 h-4 text-emerald-600" /> },
+                  { label: "Completed", completed: selectedTimelineEvent.type !== "ngo", date: "Delighted", icon: selectedTimelineEvent.type !== "ngo" ? <CheckCircle className="w-4 h-4 text-emerald-600" /> : <Clock className="w-4 h-4 text-blue-500 animate-pulse" /> },
+                ].map((step, idx) => (
+                  <div key={idx} className="flex flex-col items-center text-center z-10">
+                    <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all bg-white ${
+                      step.completed ? "border-emerald-500 text-emerald-600" : "border-slate-200 text-slate-400 bg-slate-50"
+                    }`}>
+                      {step.icon}
+                    </div>
+                    <span className="text-[9px] font-extrabold text-slate-700 mt-2 block leading-none">{step.label}</span>
+                    <span className="text-[8px] font-mono text-slate-400 mt-1 block">{step.date}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Cryptographic Ledger & Audit Hash Credentials */}
+            <div className="bg-slate-900 text-slate-300 rounded-2xl p-4 font-mono text-[10px] space-y-3 shadow-inner">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800 text-[9px] text-slate-500 font-bold uppercase tracking-wider">
+                <span>Tamper-Proof Audit Specs</span>
+                <span className="text-emerald-500 flex items-center gap-1">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  Secured
+                </span>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-slate-500">Contract Hub:</span>
+                  <span className="text-slate-200 truncate font-semibold" title="donare_ledger_v1.7_contract_sg_82649">
+                    donare_ledger_v1.7_contract_sg_82649
+                  </span>
+                </div>
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-slate-500">Proof SHA-256:</span>
+                  <span className="text-emerald-400 font-bold tracking-tight truncate max-w-[200px]" title={`0x2026${selectedTimelineEvent.id}ba9472fbeb7ae49bfe38a6ec1b28`}>
+                    0x2026{selectedTimelineEvent.id}ba9472fbeb7ae49bfe38a6ec1b28
+                  </span>
+                </div>
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-slate-500">Auditable Block Height:</span>
+                  <span className="text-slate-200 font-bold">
+                    #4,928,502
+                  </span>
+                </div>
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-slate-500">Observer Node Sign-off:</span>
+                  <span className="text-slate-200 bg-slate-800 px-1.5 py-0.5 rounded text-[9px]">
+                    Singapore Red Cross Society
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Interactive Parcel route tracking simulation */}
+            <div className="mt-5 p-3.5 bg-sky-50/50 border border-sky-100 rounded-2xl space-y-2">
+              <div className="flex items-center space-x-1.5">
+                <Map className="w-3.5 h-3.5 text-sky-600" />
+                <span className="text-slate-800 font-bold text-xs">Point-to-Point Transit Checkpoint</span>
+              </div>
+              <p className="text-[11px] text-slate-600 leading-normal">
+                This physical cargo package left the primary regional consolidation hub. It was scanned and verified on independent delivery ledgers.
+              </p>
+              <div className="flex items-center space-x-2 text-[10px] font-mono text-sky-800">
+                <span className="font-extrabold bg-sky-100 px-1.5 py-0.5 rounded-sm uppercase">Status: Routing finalized</span>
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="mt-6 pt-4 border-t border-slate-100 flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  alert(`Audit specification document ready for SHA-256 dispatch certificate #${selectedTimelineEvent.id}. Validation matches the Singapore Red Cross decentralized ledger system.`);
+                }}
+                className="flex-1 py-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 font-bold text-[11px] rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-1"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Download Ledger Document</span>
+              </button>
+              
+              <button
+                onClick={() => setSelectedTimelineEvent(null)}
+                className="px-6 py-2.5 bg-slate-900 hover:bg-slate-950 text-white font-bold text-xs rounded-xl transition-all cursor-pointer"
+              >
+                Got It
+              </button>
+            </div>
+            
           </div>
         </div>
       )}
