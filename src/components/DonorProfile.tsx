@@ -9,7 +9,7 @@ import {
   Heart, ShieldCheck, Mail, Share2, Award, Calendar, MapPin, 
   Settings, CheckCircle, Clock, Eye, Edit2, MessageSquare, 
   Lock, Globe, Users, TrendingUp, Sparkles, BookOpen, Gift, Coffee, Plus, ChevronRight, Search, ListFilter,
-  Camera, Image as ImageIcon, Upload, Activity, FileText, ExternalLink, Package, Map
+  Camera, Image as ImageIcon, Upload, Activity, FileText, ExternalLink, Package, Map, X
 } from "lucide-react";
 
 interface DonorProfileProps {
@@ -699,45 +699,67 @@ export default function DonorProfile({ currentUser, actions, onClose, onUpdateUs
               {filteredDonors.map((donor) => {
                 const isSelected = donor.id === selectedDonorId;
                 return (
-                  <button
-                    key={donor.id}
-                    id={`donor-card-select-${donor.id}`}
-                    onClick={() => handleSelectDonor(donor.id)}
-                    className={`flex items-center space-x-3 p-2 px-3.5 rounded-2xl border transition-all cursor-pointer text-left ${
-                      isSelected 
-                        ? "bg-slate-900 border-slate-900 text-white shadow-md scale-102"
-                        : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100/70 hover:border-slate-350"
-                    }`}
-                  >
-                    <div className="relative flex-shrink-0">
-                      <img
-                        src={donor.avatar}
-                        alt={donor.name}
-                        className="w-7 h-7 rounded-full object-cover border border-slate-100"
-                      />
-                      {donor.isVerified && (
-                        <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border border-white flex items-center justify-center shadow-xs">
-                          <svg className="w-2 h-2 text-white stroke-[4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                          </svg>
-                        </span>
-                      )}
-                    </div>
-                    <div>
-                      <div className="flex items-center space-x-1 font-semibold text-xs font-sans">
-                        <span>{donor.id === currentUser.id && isAnonymousDonation && isSelected && viewMode === "visitor" ? "Anonymous" : donor.name}</span>
+                  <div key={donor.id} className="relative group flex-shrink-0 animate-fadeIn">
+                    <button
+                      id={`donor-card-select-${donor.id}`}
+                      onClick={() => handleSelectDonor(donor.id)}
+                      className={`flex items-center space-x-3 p-2 pl-3.5 pr-8 rounded-2xl border transition-all cursor-pointer text-left ${
+                        isSelected 
+                          ? "bg-slate-900 border-slate-900 text-white shadow-md scale-102"
+                          : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100/70 hover:border-slate-350"
+                      }`}
+                    >
+                      <div className="relative flex-shrink-0">
+                        <img
+                          src={donor.avatar}
+                          alt={donor.name}
+                          className="w-7 h-7 rounded-full object-cover border border-slate-100"
+                        />
                         {donor.isVerified && (
-                          <ShieldCheck className="w-3.5 h-3.5 fill-current text-sky-400" />
-                        )}
-                        {donor.id === currentUser.id && (
-                          <span className="text-[8px] uppercase tracking-wide bg-emerald-600 text-white px-1.5 py-0.2 rounded font-mono font-black">Hold</span>
+                          <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border border-white flex items-center justify-center shadow-xs">
+                            <svg className="w-2 h-2 text-white stroke-[4]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          </span>
                         )}
                       </div>
-                      <span className={`text-[10px] font-mono block ${isSelected ? "text-slate-300" : "text-slate-400"}`}>
-                        @{donor.id === currentUser.id && isAnonymousDonation && isSelected && viewMode === "visitor" ? "anonymous" : donor.username} • {donor.followerCount} followers
-                      </span>
-                    </div>
-                  </button>
+                      <div>
+                        <div className="flex items-center space-x-1 font-semibold text-xs font-sans">
+                          <span>{donor.id === currentUser.id && isAnonymousDonation && isSelected && viewMode === "visitor" ? "Anonymous" : donor.name}</span>
+                          {donor.isVerified && (
+                            <ShieldCheck className="w-3.5 h-3.5 fill-current text-sky-400" />
+                          )}
+                          {donor.id === currentUser.id && (
+                            <span className="text-[8px] uppercase tracking-wide bg-emerald-600 text-white px-1.5 py-0.2 rounded font-mono font-black">Hold</span>
+                          )}
+                        </div>
+                        <span className={`text-[10px] font-mono block ${isSelected ? "text-slate-300" : "text-slate-400"}`}>
+                          @{donor.id === currentUser.id && isAnonymousDonation && isSelected && viewMode === "visitor" ? "anonymous" : donor.username} • {donor.followerCount} followers
+                        </span>
+                      </div>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setDonorsList((prev) => {
+                          const updated = prev.filter((d) => d.id !== donor.id);
+                          if (selectedDonorId === donor.id && updated.length > 0) {
+                            setSelectedDonorId(updated[0].id);
+                          }
+                          return updated;
+                        });
+                      }}
+                      title="Remove this profile"
+                      className={`absolute right-1.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 cursor-pointer z-10 ${
+                        isSelected 
+                          ? "bg-slate-800 text-slate-300 hover:bg-red-600 hover:text-white" 
+                          : "bg-slate-200 text-slate-500 hover:bg-red-500 hover:text-white"
+                      }`}
+                    >
+                      <X className="w-2.5 h-2.5" />
+                    </button>
+                  </div>
                 );
               })}
               {filteredDonors.length === 0 && (
